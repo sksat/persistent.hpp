@@ -14,18 +14,50 @@ void persistent_default(){
 }
 }
 
-class persistent {
+class persistent_base {
 public:
-	static void load(){ khpc::persistent_load(0); }
-	static void save(){ khpc::persistent_save(0); }
+	static bool load(double s){
+		if(khpc::persistent_load(s) == -1)
+			return false;
+		return true;
+	}
+	static bool load(){ return load(0); }
 
-	template<typename T>
-	static void def(T &t, const char *id){
-		khpc::persistent_def(&t, sizeof(T), 256, id);
+	static bool save(double s){
+		if(khpc::persistent_save(s) == -1)
+			return false;
+		return true;
+	}
+	static bool save(){ return save(0); }
+
+	static void def(void *p, int size, int grpId, const char *id){
+		khpc::persistent_def(p, size, grpId, id);
+	}
+};
+
+template<typename T>
+class persistent_wrapper : public persistent_base {
+public:
+	persistent_wrapper(T &var, const char *id): var(var) {
+		def(var, id);
+	}
+
+	T &var;
+
+	static void def(T &var, const char *id){
+		persistent_base::def(&var, sizeof(T), 256, id);
+	}
+	static void def(T &var, size_t num, const char *id){
+		persistent_base::def(&var, sizeof(T)*num, 256, id);
 	}
 
 };
 
-#define perpetuate(var)	persistent::def(var, #var);
+namespace persistent {
+	void load(){ persistent_base::load(); }
+	void save(){ persistent_base::save(); }
+}
+
+#define perpetuate(var)	(persistent_wrapper<decltype(var)>(var, #var))
 
 #endif

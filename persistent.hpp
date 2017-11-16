@@ -14,17 +14,17 @@ void persistent_default(){
 }
 }
 
-namespace persistent {
+class persistent {
+public:
+	static void load(){ khpc::persistent_load(0); }
+	static void save(){ khpc::persistent_save(0); }
 
-void load(){ khpc::persistent_load(0); }
-void save(){ khpc::persistent_save(0); }
+	template<typename T>
+	static void def(T &t, const char *id){
+		khpc::persistent_def(&t, sizeof(T), 256, id);
+	}
 
-template<typename T>
-void def(T &t, const char *id){
-	khpc::persistent_def(&t, sizeof(T), 256, id);
-}
-
-}
+};
 
 #define perpetuate(var)	persistent::def(var, #var);
 

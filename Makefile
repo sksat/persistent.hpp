@@ -28,3 +28,6 @@ $(KHPC_ZIP):
 khpc: $(KHPC_ZIP)
 	unzip $<
 	mv $(KHPC_DIR) $@
+
+pbdtol: khpc
+	gcc $</$@.c -o $@

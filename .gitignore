@@ -1,5 +1,6 @@
 *.pbd
 *.zip
+pbdtol
 khpc/
 
 # Prerequisites
